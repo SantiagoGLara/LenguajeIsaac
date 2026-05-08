@@ -32,6 +32,7 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
 
     @Override
     public Integer visitCondicional(CondicionalContext ctx) {
+        System.out.println("LOG: estoy entrando al condicional");
         if (ctx.NOT() != null) return visit(ctx.condicional(0)) == 1 ? 0 : 1;
         
         if (ctx.DEMONDEAL() != null) // AND
@@ -53,6 +54,7 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
 
     @Override
     public Integer visitForStmt(ForStmtContext ctx) {
+        System.out.println("LOG: estoy entrando al for");
         visit(ctx.asignacion(0));
         Integer ultimoResultado = 0;
         
@@ -88,6 +90,7 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
 
     @Override
     public Integer visitAsignacion(AsignacionContext ctx) {
+        System.out.println("LOG: estoy asignando");
         String ident = ctx.WHITECARD().getText(); 
         int valor = (ctx.condicional() != null) ? visit(ctx.condicional()) : visit(ctx.expresion());
         simbolos.put(ident, valor);
@@ -96,6 +99,7 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
 
     @Override
     public Integer visitImprimir(ImprimirContext ctx) {
+        System.out.println("LOG: estoy imprimiendo");
         if (ctx.RUNES() != null) { 
             String texto = ctx.RUNES().getText();
             System.out.println(texto.substring(1, texto.length() - 1));
@@ -108,6 +112,7 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
 
     @Override
     public Integer visitIfStmt(IfStmtContext ctx) {
+        System.out.println("LOG: estoy entrando al if");
         if (visit(ctx.condicional(0)) == 1) return visit(ctx.bloque(0));
         for (int i = 1; i < ctx.condicional().size(); i++) {
             if (visit(ctx.condicional(i)) == 1) return visit(ctx.bloque(i));
