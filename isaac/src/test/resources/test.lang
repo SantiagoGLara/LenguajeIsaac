@@ -1,0 +1,38 @@
+CARDS vida = 10 TRAPDOOR
+CARDS daño = 15 TRAPDOOR
+CARDS boss_hp = 20 TRAPDOOR
+
+
+imprimir("--- INICIO DE LA RUN ---") TRAPDOOR
+imprimir("Vida inicial:") TRAPDOOR
+imprimir(vida) TRAPDOOR
+
+CARDS bono_daño = 5 TRAPDOOR
+CARDS ataque_total = daño BATTERY bono_daño TRAPDOOR
+CARDS ataque_critico = ataque_total DIPLOPIA 2 TRAPDOOR
+
+imprimir("Estadisticas de combate:") TRAPDOOR
+imprimir("Ataque base con bono:") TRAPDOOR
+imprimir(ataque_total) TRAPDOOR
+imprimir("Daño critico calculado:") TRAPDOOR
+imprimir(ataque_critico) TRAPDOOR
+
+SACRIFICE (ataque_critico > boss_hp) {
+    imprimir("Resultado: ¡BOSS ELIMINADO!") TRAPDOOR
+} PAYSAC (ataque_critico EQUALITY boss_hp) {
+    imprimir("Resultado: El Boss sobrevive por poco") TRAPDOOR
+} PAYBACK {
+    imprimir("Resultado: Necesitas mas items...") TRAPDOOR
+}
+
+imprimir("--- RECOLECTANDO DROPS ---") TRAPDOOR
+CONTINUUM (CARDS i = 1 TRAPDOOR i < 4 TRAPDOOR CARDS i = i BATTERY 1) {
+    imprimir("Item recolectado numero:") TRAPDOOR
+    imprimir(i) TRAPDOOR
+}
+
+SACRIFICE (vida > 0 DEMONDEAL ataque_total > 10) {
+    imprimir("Estado del personaje: OP (Overpowered)") TRAPDOOR
+}
+
+imprimir("--- FIN DE LA RUN ---") TRAPDOOR
