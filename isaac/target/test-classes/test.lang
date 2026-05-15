@@ -1,38 +1,60 @@
-CARDS vida = 10 TRAPDOOR
-CARDS daño = 15 TRAPDOOR
-CARDS boss_hp = 20 TRAPDOOR
+imprimir("--- INICIANDO SIMULACION DEL JUEGO ---") TRAPDOOR
+CARDS nivel = 1 TRAPDOOR
+CARDS oro = 100 TRAPDOOR
+CARDS hp = 50 TRAPDOOR
+CARDS maxHp = 100 TRAPDOOR
 
+imprimir("Nivel inicial:") TRAPDOOR
+imprimir(nivel) TRAPDOOR
 
-imprimir("--- INICIO DE LA RUN ---") TRAPDOOR
-imprimir("Vida inicial:") TRAPDOOR
-imprimir(vida) TRAPDOOR
-
-CARDS bono_daño = 5 TRAPDOOR
-CARDS ataque_total = daño BATTERY bono_daño TRAPDOOR
-CARDS ataque_critico = ataque_total DIPLOPIA 2 TRAPDOOR
-
-imprimir("Estadisticas de combate:") TRAPDOOR
-imprimir("Ataque base con bono:") TRAPDOOR
-imprimir(ataque_total) TRAPDOOR
-imprimir("Daño critico calculado:") TRAPDOOR
-imprimir(ataque_critico) TRAPDOOR
-
-SACRIFICE (ataque_critico > boss_hp) {
-    imprimir("Resultado: ¡BOSS ELIMINADO!") TRAPDOOR
-} PAYSAC (ataque_critico EQUALITY boss_hp) {
-    imprimir("Resultado: El Boss sobrevive por poco") TRAPDOOR
-} PAYBACK {
-    imprimir("Resultado: Necesitas mas items...") TRAPDOOR
-}
-
-imprimir("--- RECOLECTANDO DROPS ---") TRAPDOOR
-CONTINUUM (CARDS i = 1 TRAPDOOR i < 4 TRAPDOOR CARDS i = i BATTERY 1) {
-    imprimir("Item recolectado numero:") TRAPDOOR
+imprimir("--- Prueba 1: Bucle CONTINUUM Anidado ---") TRAPDOOR
+CONTINUUM (CARDS i = 0 TRAPDOOR i < 3 TRAPDOOR CARDS i = i BATTERY 1) {
+    imprimir("Ronda exterior:") TRAPDOOR
     imprimir(i) TRAPDOOR
+
+    CONTINUUM (CARDS j = 1 TRAPDOOR j < 3 TRAPDOOR CARDS j = j BATTERY 1) {
+        CARDS multi = i DIPLOPIA j TRAPDOOR
+        imprimir("Sub-ronda multiplicada:") TRAPDOOR
+        imprimir(multi) TRAPDOOR
+    }
 }
 
-SACRIFICE (vida > 0 DEMONDEAL ataque_total > 10) {
-    imprimir("Estado del personaje: OP (Overpowered)") TRAPDOOR
+imprimir("--- Prueba 2: Condicional SACRIFICE Anidado ---") TRAPDOOR
+CARDS jefeDerrotado = 1 TRAPDOOR
+CARDS llaveEncontrada = 0 TRAPDOOR
+
+SACRIFICE (jefeDerrotado EQUALITY 1) {
+    imprimir("Jefe derrotado. Buscando llave para el tesoro...") TRAPDOOR
+
+    SACRIFICE (llaveEncontrada EQUALITY 1) {
+        imprimir("Llave dorada encontrada. Abriendo cofre secreto!") TRAPDOOR
+        CARDS oro = oro BATTERY 500 TRAPDOOR
+    } PAYBACK {
+        imprimir("No tienes la llave. Encuentrala en la mazmorra.") TRAPDOOR
+    }
+
+} PAYSAC (hp < 20) {
+    imprimir("Peligro: Salud critica. Huye!") TRAPDOOR
+} PAYBACK {
+    imprimir("Sigue explorando la habitacion.") TRAPDOOR
 }
 
-imprimir("--- FIN DE LA RUN ---") TRAPDOOR
+imprimir("--- Prueba 3: Operaciones Complejas y Logicas ---") TRAPDOOR
+CARDS formula = hp BATTERY 10 DIPLOPIA 2 - 5 TRAPDOOR
+imprimir("El resultado de la formula debe ser 65 (50 + 20 - 5):") TRAPDOOR
+imprimir(formula) TRAPDOOR
+
+SACRIFICE (oro > 50 DEMONDEAL hp > 10) {
+    imprimir("Tienes oro y salud. Puedes comprar pociones a la tienda.") TRAPDOOR
+}
+
+SACRIFICE (nivel > 5 ANGELDEAL oro > 200) {
+    imprimir("Eres nivel alto o tienes mucho oro. Entras a la zona VIP.") TRAPDOOR
+} PAYBACK {
+    imprimir("No cumples los requisitos VIP.") TRAPDOOR
+}
+
+imprimir("--- Prueba 4: Disparando Errores Semanticos ---") TRAPDOOR
+CARDS danoFalso = ataqueInexistente DIPLOPIA 2 TRAPDOOR
+CARDS trampaInfinita = 100 DIVORCEPAPERS 0 TRAPDOOR
+CARDS validacionFinal = 999 TRAPDOOR
