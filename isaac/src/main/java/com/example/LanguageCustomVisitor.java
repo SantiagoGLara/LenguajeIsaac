@@ -14,12 +14,19 @@ import com.example.LanguageParser.ImprimirContext;
 import com.example.LanguageParser.InstruccionContext;
 import com.example.LanguageParser.TerminoContext;
 
-public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
-    Map<String, Integer> simbolos = new HashMap<>();
+public class LanguageCustomVisitor extends LanguageBaseVisitor<Object> {
+    
+    // Fase 3: Uso de clase Simbolo para guardar valor y tipo
+    Map<String, Simbolo> tablaSimbolos = new HashMap<>();
+
+    // Método auxiliar para reportar errores con la línea exacta (Fase 4)
+    private void reportarError(String mensaje, int linea) {
+        System.err.println("Error semántico (línea " + linea + "): " + mensaje);
+    }
 
     @Override
-    public Integer visitInstruccion(InstruccionContext ctx) {
-        Integer resultado = 0;
+    public Object visitInstruccion(InstruccionContext ctx) {
+        Object resultado = 0;
         if (ctx.asignacion() != null) resultado = visit(ctx.asignacion());
         else if (ctx.imprimir() != null) resultado = visit(ctx.imprimir());
         else if (ctx.condicional() != null) resultado = visit(ctx.condicional());
@@ -31,17 +38,25 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
     }
 
     @Override
-    public Integer visitCondicional(CondicionalContext ctx) {
-        System.out.println("LOG: estoy entrando al condicional");
-        if (ctx.NOT() != null) return visit(ctx.condicional(0)) == 1 ? 0 : 1;
+    public Object visitCondicional(CondicionalContext ctx) {
+        if (ctx.NOT() != null) return (Integer) visit(ctx.condicional(0)) == 1 ? 0 : 1;
         
-        if (ctx.DEMONDEAL() != null) // AND
-            return (visit(ctx.condicional(0)) == 1 && visit(ctx.condicional(1)) == 1) ? 1 : 0;
-        if (ctx.ANGELDEAL() != null) // OR
-            return (visit(ctx.condicional(0)) == 1 || visit(ctx.condicional(1)) == 1) ? 1 : 0;
+        if (ctx.DEMONDEAL() != null) 
+            return ((Integer) visit(ctx.condicional(0)) == 1 && (Integer) visit(ctx.condicional(1)) == 1) ? 1 : 0;
+        if (ctx.ANGELDEAL() != null) 
+            return ((Integer) visit(ctx.condicional(0)) == 1 || (Integer) visit(ctx.condicional(1)) == 1) ? 1 : 0;
 
-        int c1 = visit(ctx.expresion(0));
-        int c2 = visit(ctx.expresion(1));
+        Object obj1 = visit(ctx.expresion(0));
+        Object obj2 = visit(ctx.expresion(1));
+        
+        // Validación semántica: Solo se pueden comparar números
+        if (!(obj1 instanceof Integer) || !(obj2 instanceof Integer)) {
+            reportarError("tipos incompatibles en condición (se esperaban números)", ctx.start.getLine());
+            return 0; // Falso por defecto en caso de error
+        }
+
+        int c1 = (Integer) obj1;
+        int c2 = (Integer) obj2;
         String op = ctx.getChild(1).getText();
 
         if (op.equals("EQUALITY") || op.equals("==")) return c1 == c2 ? 1 : 0;
@@ -53,12 +68,12 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
     }
 
     @Override
-    public Integer visitForStmt(ForStmtContext ctx) {
-        System.out.println("LOG: estoy entrando al for");
+    public Object visitForStmt(ForStmtContext ctx) {
         visit(ctx.asignacion(0));
-        Integer ultimoResultado = 0;
+        Object ultimoResultado = 0;
         
-        while (visit(ctx.condicional()) == 1) {
+        // Condición debe evaluar a 1 (verdadero)
+        while ((Integer) visit(ctx.condicional()) == 1) {
             ultimoResultado = visit(ctx.bloque());
             visit(ctx.asignacion(1));
         }
@@ -66,70 +81,63 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
     }
 
     @Override
-    public Integer visitExpresion(ExpresionContext ctx) {
-        Integer resultado = visit(ctx.termino(0));
+    public Object visitExpresion(ExpresionContext ctx) {
+        Object resInicial = visit(ctx.termino(0));
+        
+        // Verificamos que el primer término sea un número
+        if (!(resInicial instanceof Integer)) {
+            reportarError("tipos incompatibles: no se puede realizar suma/resta con texto", ctx.start.getLine());
+            return 0;
+        }
+        
+        Integer resultado = (Integer) resInicial;
         for (int i = 1; i < ctx.termino().size(); i++) {
             String operador = ctx.getChild(i * 2 - 1).getText();
+            Object resSiguiente = visit(ctx.termino(i));
+            
+            // Verificamos que los siguientes términos sean números
+            if (!(resSiguiente instanceof Integer)) {
+                reportarError("tipos incompatibles: no se puede realizar suma/resta con texto", ctx.start.getLine());
+                continue;
+            }
+            
             if (operador.equals("BATTERY") || operador.equals("+")) {
-                resultado += visit(ctx.termino(i));
+                resultado += (Integer) resSiguiente;
             } else {
-                resultado -= visit(ctx.termino(i));
+                resultado -= (Integer) resSiguiente;
             }
         }
         return resultado;
     }
 
     @Override
-    public Integer visitBloque(BloqueContext ctx) {
-        Integer resultado = 0;
-        for (InstruccionContext instr : ctx.instruccion()) {
-            resultado = visit(instr);
-        }
-        return resultado;
-    }
-
-    @Override
-    public Integer visitAsignacion(AsignacionContext ctx) {
-        System.out.println("LOG: estoy asignando");
-        String ident = ctx.WHITECARD().getText(); 
-        int valor = (ctx.condicional() != null) ? visit(ctx.condicional()) : visit(ctx.expresion());
-        simbolos.put(ident, valor);
-        return valor;
-    }
-
-    @Override
-    public Integer visitImprimir(ImprimirContext ctx) {
-        System.out.println("LOG: estoy imprimiendo");
-        if (ctx.RUNES() != null) { 
-            String texto = ctx.RUNES().getText();
-            System.out.println(texto.substring(1, texto.length() - 1));
+    public Object visitTermino(TerminoContext ctx) {
+        Object resInicial = visit(ctx.factor(0));
+        
+        if (!(resInicial instanceof Integer)) {
+            reportarError("tipos incompatibles: no se puede multiplicar/dividir texto", ctx.start.getLine());
             return 0;
         }
-        int valor = (ctx.condicional() != null) ? visit(ctx.condicional()) : visit(ctx.expresion());
-        System.out.println(ctx.condicional() != null ? (valor == 1 ? "true" : "false") : valor);
-        return valor;
-    }
 
-    @Override
-    public Integer visitIfStmt(IfStmtContext ctx) {
-        System.out.println("LOG: estoy entrando al if");
-        if (visit(ctx.condicional(0)) == 1) return visit(ctx.bloque(0));
-        for (int i = 1; i < ctx.condicional().size(); i++) {
-            if (visit(ctx.condicional(i)) == 1) return visit(ctx.bloque(i));
-        }
-        if (ctx.PAYBACK() != null) return visit(ctx.bloque(ctx.bloque().size() - 1));
-        return 0;
-    }
-
-    @Override
-    public Integer visitTermino(TerminoContext ctx) {
-        int resultado = visit(ctx.factor(0));
+        int resultado = (Integer) resInicial;
         for (int i = 1; i < ctx.factor().size(); i++) {
             String operador = ctx.getChild(i * 2 - 1).getText();
-            if (operador.equals("DIPLOPIA")) resultado *= visit(ctx.factor(i)); 
-            else if (operador.equals("DIVORCEPAPERS")) { 
-                int div = visit(ctx.factor(i));
-                if (div == 0) return 0;
+            Object resSiguiente = visit(ctx.factor(i));
+            
+            if (!(resSiguiente instanceof Integer)) {
+                reportarError("tipos incompatibles: no se puede multiplicar/dividir texto", ctx.start.getLine());
+                continue;
+            }
+            
+            int div = (Integer) resSiguiente;
+            if (operador.equals("DIPLOPIA")) {
+                resultado *= div; 
+            } else if (operador.equals("DIVORCEPAPERS")) { 
+                // Validación semántica: División por cero
+                if (div == 0) {
+                    reportarError("división entre cero no válida", ctx.start.getLine());
+                    return 0; // Evitamos que truene Java y retornamos 0
+                }
                 resultado /= div;
             }
         }
@@ -137,9 +145,77 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Integer> {
     }
 
     @Override
-    public Integer visitFactor(FactorContext ctx) {
+    public Object visitFactor(FactorContext ctx) {
         if (ctx.CARDS() != null) return Integer.parseInt(ctx.CARDS().getText()); 
-        if (ctx.WHITECARD() != null) return simbolos.getOrDefault(ctx.WHITECARD().getText(), 0);
+        
+        if (ctx.WHITECARD() != null) {
+            String nombreVar = ctx.WHITECARD().getText();
+            
+            // Validación semántica: Variable no declarada
+            if (!tablaSimbolos.containsKey(nombreVar)) {
+                reportarError("variable '" + nombreVar + "' no declarada", ctx.start.getLine());
+                return 0; 
+            }
+            return tablaSimbolos.get(nombreVar).valor;
+        }
         return visit(ctx.expresion());
+    }
+
+    @Override
+public Object visitAsignacion(AsignacionContext ctx) {
+    String ident = ctx.WHITECARD().getText(); 
+    String tipoDeclarado = ctx.T_ID().getText(); // Extrae "CARDS", "RUNES" o "PILLS"
+    
+    Object valor = (ctx.condicional() != null) ? visit(ctx.condicional()) : visit(ctx.expresion());
+    
+    // Determinar el tipo real del valor que se está intentando guardar
+    String tipoValor = (valor instanceof Integer) ? "CARDS" : "RUNES";
+    
+    // VALIDACIÓN SEMÁNTICA: Tipos de datos compatibles
+    if (!tipoDeclarado.equals(tipoValor)) {
+        reportarError("tipo de dato incompatible. Se declaró como " + tipoDeclarado + 
+                      ", pero se le asignó un valor tipo " + tipoValor, ctx.start.getLine());
+        return 0; // Valor de contingencia
+    }
+    
+    // Guardamos la variable en la tabla de símbolos
+    tablaSimbolos.put(ident, new Simbolo(tipoDeclarado, valor));
+    return valor;
+}
+
+    @Override
+    public Object visitImprimir(ImprimirContext ctx) {
+        if (ctx.RUNES() != null) { 
+            String texto = ctx.RUNES().getText();
+            System.out.println(texto.substring(1, texto.length() - 1));
+            return null;
+        }
+        Object valor = (ctx.condicional() != null) ? visit(ctx.condicional()) : visit(ctx.expresion());
+        
+        if (valor instanceof Integer && ctx.condicional() != null) {
+            System.out.println((Integer) valor == 1 ? "true" : "false");
+        } else {
+            System.out.println(valor);
+        }
+        return valor;
+    }
+
+    @Override
+    public Object visitIfStmt(IfStmtContext ctx) {
+        if ((Integer) visit(ctx.condicional(0)) == 1) return visit(ctx.bloque(0));
+        for (int i = 1; i < ctx.condicional().size(); i++) {
+            if ((Integer) visit(ctx.condicional(i)) == 1) return visit(ctx.bloque(i));
+        }
+        if (ctx.PAYBACK() != null) return visit(ctx.bloque(ctx.bloque().size() - 1));
+        return 0;
+    }
+    
+    @Override
+    public Object visitBloque(BloqueContext ctx) {
+        Object resultado = 0;
+        for (InstruccionContext instr : ctx.instruccion()) {
+            resultado = visit(instr);
+        }
+        return resultado;
     }
 }
