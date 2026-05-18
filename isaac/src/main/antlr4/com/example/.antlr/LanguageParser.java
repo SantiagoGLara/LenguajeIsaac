@@ -1,4 +1,4 @@
-// Generated from c:/Users/reliv/Downloads/LenguajeIsaac/isaac/src/main/antlr4/com/example/Language.g4 by ANTLR 4.13.1
+// Generated from c:/Users/reliv/kkk/LenguajeIsaac/isaac/src/main/antlr4/com/example/Language.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -136,7 +136,7 @@ public class LanguageParser extends Parser {
 				setState(25); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 42729574L) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 59506790L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -437,7 +437,7 @@ public class LanguageParser extends Parser {
 			setState(77);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 42729574L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 59506790L) != 0)) {
 				{
 				{
 				setState(74);
@@ -518,6 +518,7 @@ public class LanguageParser extends Parser {
 				break;
 			case PAREN_ABRE:
 			case CARDS:
+			case RUNES:
 			case WHITECARD:
 				{
 				setState(85);
@@ -863,6 +864,7 @@ public class LanguageParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class FactorContext extends ParserRuleContext {
 		public TerminalNode CARDS() { return getToken(LanguageParser.CARDS, 0); }
+		public TerminalNode RUNES() { return getToken(LanguageParser.RUNES, 0); }
 		public TerminalNode WHITECARD() { return getToken(LanguageParser.WHITECARD, 0); }
 		public TerminalNode PAREN_ABRE() { return getToken(LanguageParser.PAREN_ABRE, 0); }
 		public ExpresionContext expresion() {
@@ -879,7 +881,7 @@ public class LanguageParser extends Parser {
 		FactorContext _localctx = new FactorContext(_ctx, getState());
 		enterRule(_localctx, 20, RULE_factor);
 		try {
-			setState(140);
+			setState(141);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case CARDS:
@@ -889,21 +891,28 @@ public class LanguageParser extends Parser {
 				match(CARDS);
 				}
 				break;
-			case WHITECARD:
+			case RUNES:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(135);
+				match(RUNES);
+				}
+				break;
+			case WHITECARD:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(136);
 				match(WHITECARD);
 				}
 				break;
 			case PAREN_ABRE:
-				enterOuterAlt(_localctx, 3);
+				enterOuterAlt(_localctx, 4);
 				{
-				setState(136);
-				match(PAREN_ABRE);
 				setState(137);
-				expresion();
+				match(PAREN_ABRE);
 				setState(138);
+				expresion();
+				setState(139);
 				match(PAREN_CIERRA);
 				}
 				break;
@@ -940,7 +949,7 @@ public class LanguageParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u001a\u008f\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
+		"\u0004\u0001\u001a\u0090\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
 		"\u0002\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004"+
 		"\u0002\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007"+
 		"\u0002\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0001\u0000\u0004\u0000"+
@@ -961,14 +970,14 @@ public class LanguageParser extends Parser {
 		"\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0003\u0007s\b\u0007\u0001"+
 		"\u0007\u0001\u0007\u0001\b\u0001\b\u0001\b\u0005\bz\b\b\n\b\f\b}\t\b\u0001"+
 		"\t\u0001\t\u0001\t\u0005\t\u0082\b\t\n\t\f\t\u0085\t\t\u0001\n\u0001\n"+
-		"\u0001\n\u0001\n\u0001\n\u0001\n\u0003\n\u008d\b\n\u0001\n\u0000\u0001"+
-		"\n\u000b\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0000\u0003"+
-		"\u0002\u0000\u000b\u000b\u0010\u0011\u0001\u0000\u0007\b\u0001\u0000\t"+
-		"\n\u0096\u0000\u0017\u0001\u0000\u0000\u0000\u0002)\u0001\u0000\u0000"+
+		"\u0001\n\u0001\n\u0001\n\u0001\n\u0001\n\u0003\n\u008e\b\n\u0001\n\u0000"+
+		"\u0001\n\u000b\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0000"+
+		"\u0003\u0002\u0000\u000b\u000b\u0010\u0011\u0001\u0000\u0007\b\u0001\u0000"+
+		"\t\n\u0098\u0000\u0017\u0001\u0000\u0000\u0000\u0002)\u0001\u0000\u0000"+
 		"\u0000\u0004+\u0001\u0000\u0000\u0000\u0006?\u0001\u0000\u0000\u0000\b"+
 		"I\u0001\u0000\u0000\u0000\nY\u0001\u0000\u0000\u0000\ff\u0001\u0000\u0000"+
 		"\u0000\u000em\u0001\u0000\u0000\u0000\u0010v\u0001\u0000\u0000\u0000\u0012"+
-		"~\u0001\u0000\u0000\u0000\u0014\u008c\u0001\u0000\u0000\u0000\u0016\u0018"+
+		"~\u0001\u0000\u0000\u0000\u0014\u008d\u0001\u0000\u0000\u0000\u0016\u0018"+
 		"\u0003\u0002\u0001\u0000\u0017\u0016\u0001\u0000\u0000\u0000\u0018\u0019"+
 		"\u0001\u0000\u0000\u0000\u0019\u0017\u0001\u0000\u0000\u0000\u0019\u001a"+
 		"\u0001\u0000\u0000\u0000\u001a\u0001\u0001\u0000\u0000\u0000\u001b\u001c"+
@@ -1017,12 +1026,13 @@ public class LanguageParser extends Parser {
 		"\u0080\u0082\u0003\u0014\n\u0000\u0081\u007f\u0001\u0000\u0000\u0000\u0082"+
 		"\u0085\u0001\u0000\u0000\u0000\u0083\u0081\u0001\u0000\u0000\u0000\u0083"+
 		"\u0084\u0001\u0000\u0000\u0000\u0084\u0013\u0001\u0000\u0000\u0000\u0085"+
-		"\u0083\u0001\u0000\u0000\u0000\u0086\u008d\u0005\u0017\u0000\u0000\u0087"+
-		"\u008d\u0005\u0019\u0000\u0000\u0088\u0089\u0005\u0013\u0000\u0000\u0089"+
-		"\u008a\u0003\u0010\b\u0000\u008a\u008b\u0005\u0014\u0000\u0000\u008b\u008d"+
-		"\u0001\u0000\u0000\u0000\u008c\u0086\u0001\u0000\u0000\u0000\u008c\u0087"+
-		"\u0001\u0000\u0000\u0000\u008c\u0088\u0001\u0000\u0000\u0000\u008d\u0015"+
-		"\u0001\u0000\u0000\u0000\r\u0019)8=MYackr{\u0083\u008c";
+		"\u0083\u0001\u0000\u0000\u0000\u0086\u008e\u0005\u0017\u0000\u0000\u0087"+
+		"\u008e\u0005\u0018\u0000\u0000\u0088\u008e\u0005\u0019\u0000\u0000\u0089"+
+		"\u008a\u0005\u0013\u0000\u0000\u008a\u008b\u0003\u0010\b\u0000\u008b\u008c"+
+		"\u0005\u0014\u0000\u0000\u008c\u008e\u0001\u0000\u0000\u0000\u008d\u0086"+
+		"\u0001\u0000\u0000\u0000\u008d\u0087\u0001\u0000\u0000\u0000\u008d\u0088"+
+		"\u0001\u0000\u0000\u0000\u008d\u0089\u0001\u0000\u0000\u0000\u008e\u0015"+
+		"\u0001\u0000\u0000\u0000\r\u0019)8=MYackr{\u0083\u008d";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

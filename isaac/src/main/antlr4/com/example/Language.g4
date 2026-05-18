@@ -53,7 +53,8 @@ termino
     ;
 
 factor
-    : CARDS      
+    : CARDS   
+    | RUNES   
     | WHITECARD    
     | PAREN_ABRE expresion PAREN_CIERRA
     ;

@@ -84,10 +84,15 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Object> {
     public Object visitExpresion(ExpresionContext ctx) {
         Object resInicial = visit(ctx.termino(0));
         
-        // Verificamos que el primer término sea un número
+        // ¡NUEVO!: Si solo hay un término, no es suma ni resta. Devolvemos el valor (sea número o texto) tal cual.
+        if (ctx.termino().size() == 1) {
+            return resInicial;
+        }
+        
+        // Si llegamos aquí, hay operaciones aritméticas. Verificamos que el primer término sea número.
         if (!(resInicial instanceof Integer)) {
             reportarError("tipos incompatibles: no se puede realizar suma/resta con texto", ctx.start.getLine());
-            return 0;
+            return 0; // Atrapa el ERROR 4
         }
         
         Integer resultado = (Integer) resInicial;
@@ -98,7 +103,7 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Object> {
             // Verificamos que los siguientes términos sean números
             if (!(resSiguiente instanceof Integer)) {
                 reportarError("tipos incompatibles: no se puede realizar suma/resta con texto", ctx.start.getLine());
-                continue;
+                return 0; // Atrapa el ERROR 4
             }
             
             if (operador.equals("BATTERY") || operador.equals("+")) {
@@ -114,9 +119,15 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Object> {
     public Object visitTermino(TerminoContext ctx) {
         Object resInicial = visit(ctx.factor(0));
         
+        // ¡NUEVO!: Si solo hay un factor, no es multiplicación ni división. Devolvemos el valor.
+        if (ctx.factor().size() == 1) {
+            return resInicial;
+        }
+        
+        // Si hay operaciones, exigimos números
         if (!(resInicial instanceof Integer)) {
             reportarError("tipos incompatibles: no se puede multiplicar/dividir texto", ctx.start.getLine());
-            return 0;
+            return 0; 
         }
 
         int resultado = (Integer) resInicial;
@@ -126,17 +137,16 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Object> {
             
             if (!(resSiguiente instanceof Integer)) {
                 reportarError("tipos incompatibles: no se puede multiplicar/dividir texto", ctx.start.getLine());
-                continue;
+                return 0;
             }
             
             int div = (Integer) resSiguiente;
             if (operador.equals("DIPLOPIA")) {
                 resultado *= div; 
             } else if (operador.equals("DIVORCEPAPERS")) { 
-                // Validación semántica: División por cero
                 if (div == 0) {
                     reportarError("división entre cero no válida", ctx.start.getLine());
-                    return 0; // Evitamos que truene Java y retornamos 0
+                    return 0; // ERROR 3
                 }
                 resultado /= div;
             }
@@ -147,6 +157,9 @@ public class LanguageCustomVisitor extends LanguageBaseVisitor<Object> {
     @Override
     public Object visitFactor(FactorContext ctx) {
         if (ctx.CARDS() != null) return Integer.parseInt(ctx.CARDS().getText()); 
+        
+        
+        if (ctx.RUNES() != null) return ctx.RUNES().getText(); 
         
         if (ctx.WHITECARD() != null) {
             String nombreVar = ctx.WHITECARD().getText();
@@ -178,7 +191,6 @@ public Object visitAsignacion(AsignacionContext ctx) {
         return 0; // Valor de contingencia
     }
     
-    // Guardamos la variable en la tabla de símbolos
     tablaSimbolos.put(ident, new Simbolo(tipoDeclarado, valor));
     return valor;
 }

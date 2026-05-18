@@ -58,3 +58,10 @@ imprimir("--- Prueba 4: Disparando Errores Semanticos ---") TRAPDOOR
 CARDS danoFalso = ataqueInexistente DIPLOPIA 2 TRAPDOOR
 CARDS trampaInfinita = 100 DIVORCEPAPERS 0 TRAPDOOR
 CARDS validacionFinal = 999 TRAPDOOR
+
+CARDS error ="hola" BATTERY 5 TRAPDOOR
+
+CARDS vida="hola" TRAPDOOR
+SACRIFICE("a">"b"){
+
+}
