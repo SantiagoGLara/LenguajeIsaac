@@ -63,5 +63,5 @@ CARDS error ="hola" BATTERY 5 TRAPDOOR
 
 CARDS vida="hola" TRAPDOOR
 SACRIFICE("a">"b"){
-
+    RUNES string = "hola" TRAPDOOR
 }
